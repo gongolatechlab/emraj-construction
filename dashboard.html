@@ -1,425 +1,700 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Emraj Admin Portal | Enterprise Dashboard</title>
-<meta name="theme-color" content="#0B1310">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          bg: '#0B1310', surface: '#12211B', surface2: '#1A2E26',
-          text: '#F0FDF4', muted: '#94A3B8', line: 'rgba(255,255,255,0.08)',
-          gold: '#D4AF37', goldHover: '#B5952F', emerald: '#10B981',
-          danger: '#EF4444', warn: '#F59E0B'
-        },
-        fontFamily: {
-          display: ['"Space Grotesk"', 'sans-serif'],
-          sans: ['Inter', 'sans-serif']
-        }
-      }
-    }
-  }
-</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Emraj Admin — Enterprise Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  body { background-color: #0B1310; }
-  .bg-grid { background-image: linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px); background-size: 40px 40px; }
-  .kpi-card { transition: all 0.2s ease; }
-  .kpi-card:hover { border-color: rgba(212,175,55,0.3); }
-  table th { font-weight: 500; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; color: #94A3B8; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0B1310;--surface:#12211B;--surface2:#1A2E26;--surface3:#244135;--text:#F0FDF4;--muted:#94A3B8;--line:rgba(255,255,255,0.08);--gold:#D4AF37;--gold-hover:#B5952F;--emerald:#10B981;--danger:#EF4444;--warn:#F59E0B;--blue:#3B82F6;--radius:12px;--shadow:0 4px 16px rgba(0,0,0,0.3);--shadow-lg:0 20px 40px rgba(0,0,0,0.5);--sidebar-w:260px;--topbar-h:64px}
+[data-theme=light]{--bg:#F5F7F5;--surface:#fff;--surface2:#F0F4F0;--surface3:#E0E8E0;--text:#0B1310;--muted:#64748B;--line:rgba(0,0,0,0.08);--shadow:0 4px 16px rgba(0,0,0,0.06);--shadow-lg:0 20px 40px rgba(0,0,0,0.12)}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;font-size:14px}
+h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;font-weight:700;line-height:1.2}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+svg{display:block;flex-shrink:0}
+.hidden{display:none!important}
+#pinLock{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px}
+#pinLock.hidden{display:none}
+.pin-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:40px 32px;max-width:380px;width:100%;text-align:center;box-shadow:var(--shadow-lg)}
+.pin-logo{width:64px;height:64px;margin:0 auto 20px;border-radius:16px;background:linear-gradient(135deg,var(--gold),var(--gold-hover));color:#0B1310;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;font-family:'Space Grotesk',sans-serif}
+.pin-card h1{font-size:22px;margin-bottom:6px}
+.pin-card p{color:var(--muted);font-size:13px;margin-bottom:24px}
+.pin-input{width:100%;padding:16px;text-align:center;font-family:'SF Mono',monospace;font-size:28px;letter-spacing:.5em;background:var(--surface2);border:1px solid var(--line);border-radius:12px;margin-bottom:12px}
+.pin-input:focus{border-color:var(--gold);outline:none}
+.pin-btn{width:100%;padding:14px;background:var(--gold);color:#0B1310;font-weight:600;border-radius:12px;font-size:15px;transition:background .2s}
+.pin-btn:hover{background:var(--gold-hover)}
+.pin-btn:disabled{opacity:.5;cursor:not-allowed}
+.pin-err{color:var(--danger);font-size:13px;margin-top:12px;min-height:20px}
+.app{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--line);position:fixed;top:0;bottom:0;left:0;z-index:100;display:flex;flex-direction:column;transition:transform .3s,width .2s}
+.sidebar.collapsed{width:72px}
+.sidebar.collapsed .side-text,.sidebar.collapsed .side-brand-name,.sidebar.collapsed .side-section{display:none}
+.sidebar-head{height:var(--topbar-h);display:flex;align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid var(--line);flex-shrink:0}
+.sidebar.collapsed .sidebar-head{justify-content:center;padding:0}
+.side-brand-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold-hover));color:#0B1310;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;font-family:'Space Grotesk',sans-serif;flex-shrink:0}
+.side-brand-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;line-height:1.1}
+.side-brand-name span{color:var(--gold)}
+.side-brand-name small{display:block;font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.05em;margin-top:2px}
+.side-nav{flex:1;padding:16px 8px;overflow-y:auto}
+.side-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:2px;transition:all .15s;cursor:pointer;border:none;width:100%;text-align:left}
+.side-item:hover{background:var(--surface2);color:var(--text)}
+.side-item.active{background:var(--surface2);color:var(--gold)}
+.side-item svg{width:18px;height:18px;flex-shrink:0}
+.sidebar.collapsed .side-item{justify-content:center;padding:10px}
+.side-section{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:16px 14px 8px;font-weight:600}
+.side-footer{padding:12px;border-top:1px solid var(--line);flex-shrink:0}
+.main{flex:1;margin-left:var(--sidebar-w);transition:margin-left .2s;display:flex;flex-direction:column;min-width:0}
+.main.sidebar-collapsed{margin-left:72px}
+.topbar{height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 20px;position:sticky;top:0;z-index:50}
+.icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:10px;color:var(--muted);transition:all .15s;position:relative}
+.icon-btn:hover{background:var(--surface2);color:var(--text)}
+.icon-btn svg{width:18px;height:18px}
+.page-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;flex-shrink:0}
+.topbar-spacer{flex:1}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:0 12px;height:36px;max-width:280px;flex:1}
+.search-box input{background:none;border:none;outline:none;width:100%;font-size:13px}
+.search-box svg{width:16px;height:16px;color:var(--muted);flex-shrink:0}
+.search-box:focus-within{border-color:var(--gold)}
+.notif-badge{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--danger);border-radius:50%;border:1.5px solid var(--surface)}
+.admin-chip{display:flex;align-items:center;gap:10px;padding:4px 4px 4px 12px;border-radius:10px;transition:background .15s;cursor:pointer}
+.admin-chip:hover{background:var(--surface2)}
+.admin-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-hover));color:#0B1310;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;font-family:'Space Grotesk',sans-serif}
+.admin-name{font-size:12px;font-weight:600;line-height:1.2}
+.admin-role{font-size:10px;color:var(--muted)}
+.dropdown{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);min-width:200px;padding:6px;z-index:200;display:none}
+.dropdown.open{display:block}
+.dropdown-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;color:var(--text);transition:background .15s;cursor:pointer;width:100%;text-align:left}
+.dropdown-item:hover{background:var(--surface2)}
+.dropdown-item svg{width:16px;height:16px;color:var(--muted)}
+.dropdown-item.danger{color:var(--danger)}
+.dropdown-divider{height:1px;background:var(--line);margin:6px 0}
+.user-menu-wrap{position:relative}
+.content{flex:1;padding:20px;max-width:1600px;width:100%;margin:0 auto;padding-bottom:90px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:border-color .2s}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600}
+.card-subtitle{font-size:12px;color:var(--muted);margin-top:2px;font-weight:400}
+.grid{display:grid;gap:16px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.grid-kpi{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.grid-charts{grid-template-columns:repeat(2,1fr)}
+@media(max-width:1024px){.grid-3,.grid-4{grid-template-columns:repeat(2,1fr)}.grid-charts{grid-template-columns:1fr}}
+@media(max-width:640px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:10px;transition:all .2s;cursor:pointer}
+.kpi:hover{border-color:rgba(212,175,55,.3);transform:translateY(-1px)}
+.kpi-head{display:flex;align-items:center;justify-content:space-between}
+.kpi-icon{width:36px;height:36px;border-radius:10px;background:rgba(212,175,55,.12);color:var(--gold);display:flex;align-items:center;justify-content:center}
+.kpi-icon.green{background:rgba(16,185,129,.12);color:var(--emerald)}
+.kpi-icon.blue{background:rgba(59,130,246,.12);color:var(--blue)}
+.kpi-icon.warn{background:rgba(245,158,11,.12);color:var(--warn)}
+.kpi-icon.danger{background:rgba(239,68,68,.12);color:var(--danger)}
+.kpi-icon svg{width:18px;height:18px}
+.kpi-label{font-size:12px;color:var(--muted);font-weight:500}
+.kpi-value{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;line-height:1.1}
+.kpi-trend{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500}
+.kpi-trend.up{color:var(--emerald)}
+.kpi-trend.down{color:var(--danger)}
+.kpi-trend.neutral{color:var(--muted)}
+.spark{height:28px;width:100%;margin-top:4px}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;line-height:1.5;white-space:nowrap}
+.pill.green{background:rgba(16,185,129,.12);color:var(--emerald);border:1px solid rgba(16,185,129,.25)}
+.pill.amber{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25)}
+.pill.red{background:rgba(239,68,68,.12);color:var(--danger);border:1px solid rgba(239,68,68,.25)}
+.pill.blue{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.25)}
+.pill.gray{background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+.pill.gold{background:rgba(212,175,55,.12);color:var(--gold);border:1px solid rgba(212,175,55,.25)}
+.progress{height:6px;background:var(--surface2);border-radius:100px;overflow:hidden}
+.progress-bar{height:100%;background:var(--gold);border-radius:100px;transition:width .4s}
+.progress-bar.green{background:var(--emerald)}
+.progress-bar.red{background:var(--danger)}
+.progress-bar.amber{background:var(--warn)}
+.table-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.toolbar-search{flex:1;min-width:180px;max-width:320px;display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:0 12px;height:38px}
+.toolbar-search svg{width:16px;height:16px;color:var(--muted)}
+.toolbar-search input{background:none;border:none;outline:none;width:100%;font-size:13px}
+.toolbar-search:focus-within{border-color:var(--gold)}
+.select-wrap{position:relative}
+.select-wrap select{appearance:none;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:0 32px 0 12px;height:38px;font-size:13px;cursor:pointer}
+.select-wrap::after{content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);border:4px solid transparent;border-top-color:var(--muted);pointer-events:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;height:38px;border-radius:10px;font-size:13px;font-weight:600;transition:all .15s;white-space:nowrap}
+.btn svg{width:15px;height:15px}
+.btn-primary{background:var(--gold);color:#0B1310}
+.btn-primary:hover{background:var(--gold-hover)}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--line)}
+.btn-ghost:hover{background:var(--surface3)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:#DC2626}
+.btn-sm{height:32px;padding:0 10px;font-size:12px}
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:var(--surface2);border-bottom:1px solid var(--line)}
+th{text-align:left;padding:12px 14px;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--text)}
+th.sorted{color:var(--gold)}
+th .sort-arrow{display:inline-block;margin-left:4px;font-size:10px}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .15s;cursor:pointer}
+tbody tr:hover{background:var(--surface2)}
+@media(max-width:768px){table,thead,tbody,th,td,tr{display:block}thead{display:none}tbody tr{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;background:var(--surface2)}td{display:flex;justify-content:space-between;padding:6px 0;border:none;gap:12px;text-align:right}td::before{content:attr(data-label);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:600;text-align:left}}
+.pagination{display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:12px;flex-wrap:wrap}
+.pagination-info{font-size:12px;color:var(--muted)}
+.pagination-controls{display:flex;gap:4px}
+.page-btn{min-width:32px;height:32px;padding:0 8px;border-radius:8px;background:var(--surface2);border:1px solid var(--line);font-size:12px;font-weight:600;transition:all .15s}
+.page-btn:hover:not(:disabled){background:var(--surface3);border-color:var(--gold)}
+.page-btn.active{background:var(--gold);color:#0B1310;border-color:var(--gold)}
+.page-btn:disabled{opacity:.4;cursor:not-allowed}
+.empty-state{padding:48px 20px;text-align:center;color:var(--muted)}
+.empty-state svg{width:48px;height:48px;margin:0 auto 12px;opacity:.5}
+.empty-state h3{font-size:15px;color:var(--text);margin-bottom:4px;font-family:'Space Grotesk',sans-serif}
+.empty-state p{font-size:13px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:8000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-backdrop.open{display:flex;animation:fadeIn .15s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .2s}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:17px;font-family:'Space Grotesk',sans-serif;font-weight:700}
+.modal-body{padding:24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:600;margin-bottom:6px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.form-input,.form-select,.form-textarea{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;font-size:13px;transition:border-color .15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--gold)}
+.form-error{color:var(--danger);font-size:11px;margin-top:4px;min-height:14px}
+.slideover{position:fixed;inset:0;z-index:8000;display:none}
+.slideover.open{display:block}
+.slideover-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);animation:fadeIn .15s}
+.slideover-panel{position:absolute;top:0;right:0;bottom:0;width:100%;max-width:480px;background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow-lg);overflow-y:auto;animation:slideIn .2s}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.slideover-head{padding:20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:2}
+.slideover-body{padding:20px}
+#toasts{position:fixed;top:16px;right:16px;z-index:9500;display:flex;flex-direction:column;gap:8px;max-width:360px}
+.toast{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-lg);animation:slideRight .2s;font-size:13px}
+@keyframes slideRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.success{border-left:3px solid var(--emerald)}
+.toast.error{border-left:3px solid var(--danger)}
+.toast.info{border-left:3px solid var(--blue)}
+.toast svg{width:18px;height:18px}
+.toast.success svg{color:var(--emerald)}
+.toast.error svg{color:var(--danger)}
+.toast.info svg{color:var(--blue)}
+.bottom-tabs{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--surface);border-top:1px solid var(--line);padding:4px 4px max(4px,env(safe-area-inset-bottom))}
+.bottom-tabs-grid{display:grid;grid-template-columns:repeat(5,1fr)}
+.tab-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:8px;color:var(--muted);font-size:10px;font-weight:500;transition:color .15s}
+.tab-item.active{color:var(--gold)}
+.tab-item svg{width:20px;height:20px}
+.skeleton{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.chart-wrap{position:relative;height:240px;width:100%}
+.chart-wrap.tall{height:280px}
+.alert-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.alert-item:last-child{border-bottom:none}
+.alert-icon{width:32px;height:32px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.alert-icon.warn{background:rgba(245,158,11,.12);color:var(--warn)}
+.alert-icon.danger{background:rgba(239,68,68,.12);color:var(--danger)}
+.alert-icon.info{background:rgba(59,130,246,.12);color:var(--blue)}
+.alert-icon svg{width:16px;height:16px}
+.alert-text{flex:1;font-size:13px}
+.alert-text small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:'';position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.timeline-item{position:relative;padding-bottom:16px}
+.timeline-item:last-child{padding-bottom:0}
+.timeline-item::before{content:'';position:absolute;left:-20px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--gold);border:2px solid var(--surface)}
+.timeline-item p{font-size:13px;line-height:1.4}
+.timeline-item time{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.gantt{overflow-x:auto;padding-bottom:8px}
+.gantt-grid{display:grid;grid-template-columns:160px 1fr;gap:0;min-width:700px}
+.gantt-months{display:grid;grid-template-columns:repeat(12,1fr);border-bottom:1px solid var(--line)}
+.gantt-month{font-size:10px;color:var(--muted);text-align:center;padding:6px 0;border-left:1px solid var(--line)}
+.gantt-month:first-child{border-left:none}
+.gantt-row-name{font-size:12px;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gantt-track{position:relative;border-bottom:1px solid var(--line);height:38px;display:flex;align-items:center}
+.gantt-bar{position:absolute;height:16px;border-radius:4px;background:var(--gold);opacity:.85}
+.gantt-bar.green{background:var(--emerald)}
+.gantt-bar.amber{background:var(--warn)}
+.gantt-bar.red{background:var(--danger)}
+.report-section{margin-bottom:24px}
+.report-section h3{font-size:14px;font-family:'Space Grotesk',sans-serif;padding-bottom:8px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.report-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px dashed var(--line)}
+.report-row:last-child{border-bottom:none;font-weight:700;padding-top:12px}
+@media print{.sidebar,.topbar,.bottom-tabs,.no-print,#toasts{display:none!important}.main{margin-left:0!important}.content{padding:0!important;max-width:100%!important}body{background:#fff!important;color:#000!important}.card{border:1px solid #ccc!important;box-shadow:none!important;break-inside:avoid}}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}
+.gap-2{gap:8px}.gap-3{gap:12px}.gap-4{gap:16px}
+.mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}
+.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}
+.text-muted{color:var(--muted)}.text-gold{color:var(--gold)}.text-sm{font-size:12px}
+.fw-600{font-weight:600}.text-right{text-align:right}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);width:260px;box-shadow:var(--shadow-lg)}.sidebar.mobile-open{transform:translateX(0)}.main{margin-left:0}.bottom-tabs{display:block}.search-box{display:none}.admin-name,.admin-role{display:none}.page-title{font-size:14px}.content{padding:16px;padding-bottom:80px}.topbar{padding:0 12px;gap:8px}.grid-2,.grid-3,.grid-4,.grid-kpi,.grid-charts{grid-template-columns:1fr}.kpi-value{font-size:20px}}
+@media(min-width:901px){.mobile-only{display:none}}
+@media(max-width:900px){.mobile-search-btn{display:flex}}
+.side-nav::-webkit-scrollbar{width:4px}.side-nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;backdrop-filter:blur(2px)}
+.sidebar-backdrop.open{display:block}
 </style>
 </head>
-<body class="bg-bg text-text font-sans antialiased overflow-x-hidden">
-<div id="pinGate" class="fixed inset-0 z-[999] bg-bg flex items-center justify-center p-4">
-  <div class="bg-surface border border-line rounded-2xl p-8 max-w-sm w-full text-center">
-    <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-gold to-goldHover text-bg flex items-center justify-center font-bold text-2xl">E</div>
-    <h2 class="font-display font-bold text-xl mb-1">EMRAJ ADMIN</h2>
-    <p class="text-muted text-xs mb-6">Enter admin PIN to continue</p>
-    <input id="pinInput" type="password" inputmode="numeric" maxlength="4" class="w-full text-center text-2xl tracking-[0.5em] font-mono bg-surface2 border border-line rounded-lg py-3 mb-4 focus:outline-none focus:border-gold" placeholder="....">
-    <button id="pinBtn" class="w-full bg-gold text-bg font-semibold rounded-lg py-3 hover:bg-goldHover transition">Unlock</button>
-    <p id="pinErr" class="text-danger text-xs mt-3 hidden">Incorrect PIN</p>
+<body>
+
+<div id="pinLock" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
+  <div class="pin-card">
+    <div class="pin-logo">E</div>
+    <h1 id="pinTitle">EMRAJ ADMIN</h1>
+    <p>Enter your 4-digit PIN to access the portal</p>
+    <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="4" aria-label="PIN code" placeholder="••••" autocomplete="off">
+    <button id="pinBtn" class="pin-btn">Unlock Portal</button>
+    <div class="pin-err" id="pinErr" role="alert"></div>
   </div>
 </div>
-<script>
-(function(){
-  const PIN="1973";
-  const gate=document.getElementById("pinGate");
-  const inp=document.getElementById("pinInput");
-  const btn=document.getElementById("pinBtn");
-  const err=document.getElementById("pinErr");
-  if(sessionStorage.getItem("emraj_admin_ok")==="1"){gate.remove();return;}
-  document.body.style.overflow="hidden";
-  function unlock(){
-    if(inp.value===PIN){sessionStorage.setItem("emraj_admin_ok","1");gate.remove();document.body.style.overflow="";}
-    else{err.classList.remove("hidden");inp.value="";inp.focus();setTimeout(()=>err.classList.add("hidden"),1500);}
-  }
-  btn.addEventListener("click",unlock);
-  inp.addEventListener("keydown",e=>{if(e.key==="Enter")unlock();});
-  inp.focus();
-})();
-</script>
 
-<!-- Top Nav -->
-<header class="sticky top-0 z-50 bg-bg/90 backdrop-blur-md border-b border-line">
-  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-gold to-goldHover text-bg flex items-center justify-center font-bold text-lg">E</div>
-      <span class="font-display font-bold text-lg hidden sm:block">EMRAJ <span class="text-gold">ADMIN</span></span>
+<div class="app" id="app" style="visibility:hidden">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar-head">
+      <div class="side-brand-mark">E</div>
+      <div class="side-brand-name">EMRAJ<span>.</span><small>ADMIN PORTAL</small></div>
     </div>
-    <nav class="hidden md:flex items-center gap-1 text-sm">
-      <a href="#overview" class="px-3 py-2 rounded-lg bg-surface2 text-gold font-medium">Overview</a>
-      <a href="#projects" class="px-3 py-2 rounded-lg hover:bg-surface2 text-muted hover:text-text transition">Projects</a>
-      <a href="#equipment" class="px-3 py-2 rounded-lg hover:bg-surface2 text-muted hover:text-text transition">Equipment</a>
-      <a href="#staff" class="px-3 py-2 rounded-lg hover:bg-surface2 text-muted hover:text-text transition">Staff</a>
-      <a href="#clients" class="px-3 py-2 rounded-lg hover:bg-surface2 text-muted hover:text-text transition">Clients</a>
+    <nav class="side-nav" id="sideNav">
+      <div class="side-section">Main</div>
+      <button class="side-item active" data-page="overview" onclick="navigate('overview')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span class="side-text">Overview</span></button>
+      <button class="side-item" data-page="projects" onclick="navigate('projects')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4M3 7v10l9 4 9-4V7M3 7l9 4 9-4M12 11v10"/></svg><span class="side-text">Projects</span></button>
+      <button class="side-item" data-page="fleet" onclick="navigate('fleet')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l-4 4 4 4M10 3v18"/></svg><span class="side-text">Fleet</span></button>
+      <button class="side-item" data-page="staff" onclick="navigate('staff')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a6 6 0 0112 0v2"/><circle cx="17" cy="11" r="3"/><path d="M21 21v-2a4 4 0 00-3-3.87"/></svg><span class="side-text">Staff</span></button>
+      <button class="side-item" data-page="clients" onclick="navigate('clients')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg><span class="side-text">Clients</span></button>
+      <div class="side-section">Finance</div>
+      <button class="side-item" data-page="finance" onclick="navigate('finance')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span class="side-text">Invoices</span></button>
+      <button class="side-item" data-page="reports" onclick="navigate('reports')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg><span class="side-text">Reports</span></button>
     </nav>
-    <div class="flex items-center gap-3">
-      <span class="hidden sm:block text-xs text-muted">Admin</span>
-      <div class="w-8 h-8 rounded-full bg-surface2 border border-line flex items-center justify-center text-xs font-semibold text-gold">E</div>
+    <div class="side-footer">
+      <button class="side-item" onclick="window.location.href='../index.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span class="side-text">Back to Website</span></button>
+      <button class="side-item" onclick="resetDemo()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16M8 16H3v5"/></svg><span class="side-text">Reset Demo</span></button>
     </div>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileSidebar()"></div>
+  <div class="main" id="main">
+    <header class="topbar">
+      <button class="icon-btn mobile-only" onclick="openMobileSidebar()" aria-label="Open menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <button class="icon-btn desktop-only" onclick="toggleSidebarCollapse()" aria-label="Toggle sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <h2 class="page-title" id="pageTitle">Overview</h2>
+      <div class="topbar-spacer"></div>
+      <div class="search-box" role="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input id="globalSearch" type="text" placeholder="Search projects, staff, clients…" aria-label="Global search"></div>
+      <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button>
+      <button class="icon-btn" onclick="showNotifications()" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg><span class="notif-badge"></span></button>
+      <div class="user-menu-wrap">
+        <button class="admin-chip" onclick="toggleUserMenu(event)" aria-haspopup="true" aria-expanded="false"><div><div class="admin-name">Admin</div><div class="admin-role">Super Admin</div></div><div class="admin-avatar">EM</div></button>
+        <div class="dropdown" id="userMenu" role="menu">
+          <button class="dropdown-item" onclick="toast('Profile coming soon','info');closeUserMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Profile</button>
+          <button class="dropdown-item" onclick="lockNow();closeUserMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Lock</button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item danger" onclick="logout();closeUserMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Logout</button>
+        </div>
+      </div>
+    </header>
+    <main class="content" id="content"></main>
   </div>
-</header>
+</div>
 
-<main class="max-w-7xl mx-auto px-4 pt-8 pb-24 md:pb-8 space-y-10">
-
-  <!-- Overview -->
-  <section id="overview">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h1 class="font-display font-bold text-2xl sm:text-3xl">Overview Dashboard</h1>
-        <p class="text-muted text-sm mt-1">Emraj Construction & Investment LTD — November 2026</p>
-      </div>
-      <a href="../index.html" class="text-xs px-3 py-2 rounded-lg border border-line hover:border-gold/40 text-muted hover:text-gold transition">← Back to Website</a>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="kpi-card bg-surface border border-line rounded-xl p-5">
-        <p class="text-xs text-muted mb-1">Active Projects</p>
-        <p class="font-display font-bold text-3xl text-gold">3</p>
-        <p class="text-xs text-emerald mt-1">↑ 1 new tender</p>
-      </div>
-      <div class="kpi-card bg-surface border border-line rounded-xl p-5">
-        <p class="text-xs text-muted mb-1">Total Contract Value</p>
-        <p class="font-display font-bold text-3xl">₦2.8B</p>
-        <p class="text-xs text-muted mt-1">Across active sites</p>
-      </div>
-      <div class="kpi-card bg-surface border border-line rounded-xl p-5">
-        <p class="text-xs text-muted mb-1">Equipment Fleet Value</p>
-        <p class="font-display font-bold text-3xl">₦620M</p>
-        <p class="text-xs text-muted mt-1">9 Heavy Machines</p>
-      </div>
-      <div class="kpi-card bg-surface border border-line rounded-xl p-5">
-        <p class="text-xs text-muted mb-1">Staff on Site Today</p>
-        <p class="font-display font-bold text-3xl text-emerald">96</p>
-        <p class="text-xs text-muted mt-1">Across 3 locations</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Active Sites -->
-  <section>
-    <h2 class="font-display font-semibold text-xl mb-4">Active Site Overview</h2>
-    <div class="bg-surface border border-line rounded-xl overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-surface2 border-b border-line">
-            <tr>
-              <th class="text-left px-4 py-3">Project Name</th>
-              <th class="text-left px-4 py-3">Location</th>
-              <th class="text-left px-4 py-3">Project Manager</th>
-              <th class="text-right px-4 py-3">Budget</th>
-              <th class="text-left px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-line">
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Emraj Estate Phase 1</td>
-              <td class="px-4 py-3 text-muted">Abuja, FCT</td>
-              <td class="px-4 py-3">Engr. A. Bello</td>
-              <td class="px-4 py-3 text-right font-mono">₦1,200,000,000</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-emerald/10 text-emerald border border-emerald/20">In Progress</span></td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Emraj Commercial Hub</td>
-              <td class="px-4 py-3 text-muted">Lagos</td>
-              <td class="px-4 py-3">Arc. M. Yusuf</td>
-              <td class="px-4 py-3 text-right font-mono">₦980,000,000</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-emerald/10 text-emerald border border-emerald/20">In Progress</span></td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Emraj Road Rehabilitation</td>
-              <td class="px-4 py-3 text-muted">Kano</td>
-              <td class="px-4 py-3">Engr. S. Adamu</td>
-              <td class="px-4 py-3 text-right font-mono">₦620,000,000</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-warn/10 text-warn border border-warn/20">Foundation</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- All Projects -->
-  <section id="projects">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="font-display font-semibold text-xl">All Infrastructure Projects</h2>
-      <button class="text-xs px-3 py-2 rounded-lg bg-gold text-bg font-semibold hover:bg-goldHover transition">+ New Project</button>
-    </div>
-    <div class="bg-surface border border-line rounded-xl overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-surface2 border-b border-line">
-            <tr>
-              <th class="text-left px-4 py-3">Project ID</th>
-              <th class="text-left px-4 py-3">Name</th>
-              <th class="text-left px-4 py-3">Client</th>
-              <th class="text-left px-4 py-3">Deadline</th>
-              <th class="text-left px-4 py-3">Completion</th>
-              <th class="text-left px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-line">
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-mono text-xs text-muted">#EMJ-001</td>
-              <td class="px-4 py-3 font-medium">Emraj Estate Phase 1</td>
-              <td class="px-4 py-3 text-muted">Federal Housing Authority</td>
-              <td class="px-4 py-3 text-muted">Jun 2027</td>
-              <td class="px-4 py-3"><div class="flex items-center gap-2"><div class="w-16 h-1.5 bg-surface2 rounded-full overflow-hidden"><div class="h-full bg-gold rounded-full" style="width:45%"></div></div><span class="text-xs font-mono">45%</span></div></td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-emerald/10 text-emerald border border-emerald/20">Active</span></td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-mono text-xs text-muted">#EMJ-002</td>
-              <td class="px-4 py-3 font-medium">Emraj Commercial Hub</td>
-              <td class="px-4 py-3 text-muted">Private Consortium</td>
-              <td class="px-4 py-3 text-muted">Sep 2027</td>
-              <td class="px-4 py-3"><div class="flex items-center gap-2"><div class="w-16 h-1.5 bg-surface2 rounded-full overflow-hidden"><div class="h-full bg-gold rounded-full" style="width:30%"></div></div><span class="text-xs font-mono">30%</span></div></td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-emerald/10 text-emerald border border-emerald/20">Active</span></td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-mono text-xs text-muted">#EMJ-003</td>
-              <td class="px-4 py-3 font-medium">Emraj Road Rehabilitation</td>
-              <td class="px-4 py-3 text-muted">Kano State Govt</td>
-              <td class="px-4 py-3 text-muted">Feb 2027</td>
-              <td class="px-4 py-3"><div class="flex items-center gap-2"><div class="w-16 h-1.5 bg-surface2 rounded-full overflow-hidden"><div class="h-full bg-gold rounded-full" style="width:12%"></div></div><span class="text-xs font-mono">12%</span></div></td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-warn/10 text-warn border border-warn/20">Starting</span></td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-mono text-xs text-muted">#EMJ-004</td>
-              <td class="px-4 py-3 font-medium">Emraj Warehouse Retrofit</td>
-              <td class="px-4 py-3 text-muted">Private Dev</td>
-              <td class="px-4 py-3 text-muted">Completed</td>
-              <td class="px-4 py-3"><div class="flex items-center gap-2"><div class="w-16 h-1.5 bg-surface2 rounded-full overflow-hidden"><div class="h-full bg-emerald rounded-full" style="width:100%"></div></div><span class="text-xs font-mono">100%</span></div></td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-muted/10 text-muted border border-line">Completed</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- Equipment -->
-  <section id="equipment">
-    <h2 class="font-display font-semibold text-xl mb-4">Heavy Equipment & Fleet Tracking</h2>
-    <div class="bg-surface border border-line rounded-xl overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-surface2 border-b border-line">
-            <tr>
-              <th class="text-left px-4 py-3">Asset Name</th>
-              <th class="text-left px-4 py-3">Serial / ID</th>
-              <th class="text-left px-4 py-3">Assigned Site</th>
-              <th class="text-left px-4 py-3">Condition</th>
-              <th class="text-left px-4 py-3">Next Maintenance</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-line">
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">CAT 320 Excavator</td>
-              <td class="px-4 py-3 font-mono text-xs text-muted">#EM-EQ-2201</td>
-              <td class="px-4 py-3 text-muted">Emraj Estate Phase 1</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-emerald/10 text-emerald border border-emerald/20">Operational</span></td>
-              <td class="px-4 py-3 text-muted">Dec 05, 2026</td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">JCB 3CX Backhoe</td>
-              <td class="px-4 py-3 font-mono text-xs text-muted">#EM-EQ-1105</td>
-              <td class="px-4 py-3 text-muted">Commercial Hub</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-danger/10 text-danger border border-danger/20">In Repair</span></td>
-              <td class="px-4 py-3 text-muted">In Workshop</td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">XCMG Truck Crane</td>
-              <td class="px-4 py-3 font-mono text-xs text-muted">#EM-EQ-7781</td>
-              <td class="px-4 py-3 text-muted">Emraj Estate Phase 1</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-emerald/10 text-emerald border border-emerald/20">Operational</span></td>
-              <td class="px-4 py-3 text-muted">Jan 18, 2027</td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">CAT 140K Grader</td>
-              <td class="px-4 py-3 font-mono text-xs text-muted">#EM-EQ-4412</td>
-              <td class="px-4 py-3 text-muted">Road Rehabilitation</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-emerald/10 text-emerald border border-emerald/20">Operational</span></td>
-              <td class="px-4 py-3 text-muted">Nov 28, 2026</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="grid grid-cols-3 gap-3 mt-4">
-      <div class="bg-surface border border-line rounded-lg p-4 text-center"><p class="text-xs text-muted">Total Workforce</p><p class="font-display font-bold text-2xl">128</p></div>
-      <div class="bg-surface border border-line rounded-lg p-4 text-center"><p class="text-xs text-muted">Active On-Site</p><p class="font-display font-bold text-2xl text-emerald">96</p></div>
-      <div class="bg-surface border border-line rounded-lg p-4 text-center"><p class="text-xs text-muted">Engineers & Surveyors</p><p class="font-display font-bold text-2xl text-gold">18</p></div>
-    </div>
-  </section>
-
-  <!-- Staff -->
-  <section id="staff">
-    <h2 class="font-display font-semibold text-xl mb-4">Site Staff Directory</h2>
-    <div class="bg-surface border border-line rounded-xl overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-surface2 border-b border-line">
-            <tr>
-              <th class="text-left px-4 py-3">Name</th>
-              <th class="text-left px-4 py-3">Role</th>
-              <th class="text-left px-4 py-3">Assigned Site</th>
-              <th class="text-left px-4 py-3">Status</th>
-              <th class="text-right px-4 py-3">Daily Rate</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-line">
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Engr. A. Bello</td>
-              <td class="px-4 py-3 text-muted">Lead Civil Engineer</td>
-              <td class="px-4 py-3 text-muted">Estate Phase 1</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-emerald/10 text-emerald border border-emerald/20">On-Site</span></td>
-              <td class="px-4 py-3 text-right font-mono">₦48,000</td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Arc. M. Yusuf</td>
-              <td class="px-4 py-3 text-muted">Project Director</td>
-              <td class="px-4 py-3 text-muted">Commercial Hub</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-emerald/10 text-emerald border border-emerald/20">On-Site</span></td>
-              <td class="px-4 py-3 text-right font-mono">₦52,000</td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Surv. H. Musa</td>
-              <td class="px-4 py-3 text-muted">Land Surveyor</td>
-              <td class="px-4 py-3 text-muted">Road Rehabilitation</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-gold/10 text-gold border border-gold/20">Field Work</span></td>
-              <td class="px-4 py-3 text-right font-mono">₦26,000</td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Mr. T. Danjuma</td>
-              <td class="px-4 py-3 text-muted">Crane Operator</td>
-              <td class="px-4 py-3 text-muted">Estate Phase 1</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-emerald/10 text-emerald border border-emerald/20">On-Site</span></td>
-              <td class="px-4 py-3 text-right font-mono">₦18,000</td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Mr. K. Eze</td>
-              <td class="px-4 py-3 text-muted">Safety Officer</td>
-              <td class="px-4 py-3 text-muted">Commercial Hub</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-muted/10 text-muted border border-line">On Leave</span></td>
-              <td class="px-4 py-3 text-right font-mono">₦20,000</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- Clients -->
-  <section id="clients">
-    <h2 class="font-display font-semibold text-xl mb-4">Client & Contract Directory</h2>
-    <div class="bg-surface border border-line rounded-xl overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-surface2 border-b border-line">
-            <tr>
-              <th class="text-left px-4 py-3">Client Name</th>
-              <th class="text-left px-4 py-3">Contact Info</th>
-              <th class="text-center px-4 py-3">Active Projects</th>
-              <th class="text-right px-4 py-3">Total Contract Value</th>
-              <th class="text-left px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-line">
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Federal Housing Authority</td>
-              <td class="px-4 py-3 text-muted text-xs">Abuja, FCT<br>+234 900 000 0001</td>
-              <td class="px-4 py-3 text-center">1</td>
-              <td class="px-4 py-3 text-right font-mono">₦1,200,000,000</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-gold/10 text-gold border border-gold/20">Government</span></td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Private Consortium</td>
-              <td class="px-4 py-3 text-muted text-xs">Lagos, Nigeria<br>+234 900 000 0002</td>
-              <td class="px-4 py-3 text-center">1</td>
-              <td class="px-4 py-3 text-right font-mono">₦980,000,000</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-surface2 text-muted border border-line">Private</span></td>
-            </tr>
-            <tr class="hover:bg-surface2/40 transition">
-              <td class="px-4 py-3 font-medium">Kano State Govt</td>
-              <td class="px-4 py-3 text-muted text-xs">Kano, Nigeria<br>+234 900 000 0003</td>
-              <td class="px-4 py-3 text-center">1</td>
-              <td class="px-4 py-3 text-right font-mono">₦620,000,000</td>
-              <td class="px-4 py-3"><span class="text-xs px-2 py-1 rounded-full bg-gold/10 text-gold border border-gold/20">Government</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="max-w-7xl mx-auto px-4 py-8 text-center text-xs text-muted border-t border-line mt-8">
-  Emraj Construction & Investment LTD — Admin Portal · PIN protected
-</footer>
-
-<!-- Mobile Bottom Tab Bar -->
-<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-md border-t border-line">
-  <div class="grid grid-cols-5">
-    <a href="#overview" class="tab flex flex-col items-center gap-1 py-2.5 text-[10px] text-muted" data-tab="overview">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Overview</a>
-    <a href="#projects" class="tab flex flex-col items-center gap-1 py-2.5 text-[10px] text-muted" data-tab="projects">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></svg>Projects</a>
-    <a href="#equipment" class="tab flex flex-col items-center gap-1 py-2.5 text-[10px] text-muted" data-tab="equipment">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 7l-4 4 4 4M10 3v18"/></svg>Fleet</a>
-    <a href="#staff" class="tab flex flex-col items-center gap-1 py-2.5 text-[10px] text-muted" data-tab="staff">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11a3 3 0 100-6M21 21v-2a4 4 0 00-3-3.87"/></svg>Staff</a>
-    <a href="#clients" class="tab flex flex-col items-center gap-1 py-2.5 text-[10px] text-muted" data-tab="clients">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>Clients</a>
+<nav class="bottom-tabs no-print" id="bottomTabs">
+  <div class="bottom-tabs-grid">
+    <button class="tab-item active" data-page="overview" onclick="navigate('overview')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Overview</button>
+    <button class="tab-item" data-page="projects" onclick="navigate('projects')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4M3 7v10l9 4 9-4V7"/></svg>Projects</button>
+    <button class="tab-item" data-page="fleet" onclick="navigate('fleet')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l-4 4 4 4M10 3v18"/></svg>Fleet</button>
+    <button class="tab-item" data-page="staff" onclick="navigate('staff')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a6 6 0 0112 0v2"/></svg>Staff</button>
+    <button class="tab-item" data-page="finance" onclick="navigate('finance')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Finance</button>
   </div>
 </nav>
-<script>
-(function(){
-  var tabs=document.querySelectorAll('.tab');
-  function setActive(id){
-    tabs.forEach(function(t){
-      var on=t.dataset.tab===id;
-      t.classList.toggle('text-gold',on);
-      t.classList.toggle('text-muted',!on);
-    });
-  }
-  setActive('overview');
-  tabs.forEach(function(t){
-    t.addEventListener('click',function(){setActive(t.dataset.tab);});
-  });
-  var secs=document.querySelectorAll('main section[id]');
-  if('IntersectionObserver' in window){
-    var io=new IntersectionObserver(function(es){
-      es.forEach(function(e){ if(e.isIntersecting) setActive(e.target.id); });
-    },{rootMargin:'-40% 0px -50% 0px'});
-    secs.forEach(function(s){io.observe(s);});
-  }
-})();
-</script>
 
+<div class="modal-backdrop" id="modalBackdrop" onclick="if(event.target===this)closeModal()"></div>
+<div class="slideover" id="slideover" onclick="if(event.target===this)closeSlideover()"><div class="slideover-backdrop"></div><div class="slideover-panel" id="slideoverPanel" role="dialog" aria-modal="true"></div></div>
+<div id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const PIN='1973',MAX_ATTEMPTS=3,LOCKOUT_MS=60000,IDLE_MS=600000,LS_KEY='emraj_portal_v2',THEME_KEY='emraj_theme';
+const DEMO_DATA={
+projects:[
+{id:'EMJ-001',name:'Emraj Estate Phase 1',client:'Federal Housing Authority',location:'Abuja, FCT',manager:'Engr. A. Bello',budget:1200000000,spend:540000000,completion:45,status:'Active',start:'2026-03-01',deadline:'2027-06-30',risk:'low'},
+{id:'EMJ-002',name:'Emraj Commercial Hub',client:'Private Consortium',location:'Lagos',manager:'Arc. M. Yusuf',budget:980000000,spend:294000000,completion:30,status:'Active',start:'2026-05-15',deadline:'2027-09-15',risk:'medium'},
+{id:'EMJ-003',name:'Emraj Road Rehabilitation',client:'Kano State Govt',location:'Kano',manager:'Engr. S. Adamu',budget:620000000,spend:74400000,completion:12,status:'Starting',start:'2026-10-01',deadline:'2027-02-28',risk:'high'},
+{id:'EMJ-004',name:'Emraj Warehouse Retrofit',client:'Private Dev',location:'Abuja, FCT',manager:'Engr. A. Bello',budget:180000000,spend:180000000,completion:100,status:'Completed',start:'2026-01-10',deadline:'2026-08-15',risk:'low'}],
+fleet:[
+{id:'EM-EQ-2201',name:'CAT 320 Excavator',type:'Excavator',site:'Emraj Estate Phase 1',condition:'Operational',utilization:87,nextMaint:'2026-12-05',value:95000000,services:4},
+{id:'EM-EQ-1105',name:'JCB 3CX Backhoe',type:'Backhoe',site:'Commercial Hub',condition:'In Repair',utilization:0,nextMaint:'2026-11-20',value:42000000,services:6},
+{id:'EM-EQ-7781',name:'XCMG Truck Crane',type:'Crane',site:'Emraj Estate Phase 1',condition:'Operational',utilization:74,nextMaint:'2027-01-18',value:180000000,services:2},
+{id:'EM-EQ-4412',name:'CAT 140K Grader',type:'Grader',site:'Road Rehabilitation',condition:'Operational',utilization:61,nextMaint:'2026-11-28',value:110000000,services:3},
+{id:'EM-EQ-5501',name:'Dynapac Roller',type:'Compactor',site:'Road Rehabilitation',condition:'Operational',utilization:55,nextMaint:'2026-12-12',value:38000000,services:5},
+{id:'EM-EQ-3302',name:'Volvo Dump Truck 1',type:'Truck',site:'Emraj Estate Phase 1',condition:'Operational',utilization:92,nextMaint:'2026-11-30',value:32000000,services:7},
+{id:'EM-EQ-3303',name:'Volvo Dump Truck 2',type:'Truck',site:'Commercial Hub',condition:'Operational',utilization:88,nextMaint:'2026-12-18',value:32000000,services:6},
+{id:'EM-EQ-9012',name:'CAT 320 Excavator #2',type:'Excavator',site:'Commercial Hub',condition:'Operational',utilization:79,nextMaint:'2026-12-08',value:95000000,services:3},
+{id:'EM-EQ-4410',name:'Komatsu Dozer',type:'Dozer',site:'Road Rehabilitation',condition:'Operational',utilization:44,nextMaint:'2027-01-05',value:66000000,services:4}],
+staff:[
+{id:1,name:'Engr. A. Bello',role:'Lead Civil Engineer',site:'Estate Phase 1',status:'On-Site',rate:48000,attendance:96,phone:'+234 900 100 0001'},
+{id:2,name:'Arc. M. Yusuf',role:'Project Director',site:'Commercial Hub',status:'On-Site',rate:52000,attendance:98,phone:'+234 900 100 0002'},
+{id:3,name:'Surv. H. Musa',role:'Land Surveyor',site:'Road Rehabilitation',status:'Field Work',rate:26000,attendance:92,phone:'+234 900 100 0003'},
+{id:4,name:'Mr. T. Danjuma',role:'Crane Operator',site:'Estate Phase 1',status:'On-Site',rate:18000,attendance:94,phone:'+234 900 100 0004'},
+{id:5,name:'Mr. K. Eze',role:'Safety Officer',site:'Commercial Hub',status:'On Leave',rate:20000,attendance:0,phone:'+234 900 100 0005'},
+{id:6,name:'Engr. S. Adamu',role:'Site Engineer',site:'Road Rehabilitation',status:'On-Site',rate:38000,attendance:95,phone:'+234 900 100 0006'},
+{id:7,name:'Mr. I. Bakare',role:'Foreman',site:'Estate Phase 1',status:'On-Site',rate:22000,attendance:97,phone:'+234 900 100 0007'},
+{id:8,name:'Mr. J. Okonkwo',role:'Mason Lead',site:'Commercial Hub',status:'On-Site',rate:16000,attendance:90,phone:'+234 900 100 0008'},
+{id:9,name:'Ms. F. Adeyemi',role:'Quantity Surveyor',site:'Estate Phase 1',status:'On-Site',rate:35000,attendance:96,phone:'+234 900 100 0009'},
+{id:10,name:'Mr. B. Yakubu',role:'Electrician',site:'Commercial Hub',status:'Field Work',rate:17000,attendance:88,phone:'+234 900 100 0010'}],
+clients:[
+{id:1,name:'Federal Housing Authority',contact:'+234 900 000 0001',email:'projects@fha.gov.ng',location:'Abuja, FCT',type:'Government',contract:1200000000,paid:540000000,status:'Partial'},
+{id:2,name:'Private Consortium',contact:'+234 900 000 0002',email:'info@pclagos.com',location:'Lagos',type:'Private',contract:980000000,paid:490000000,status:'Partial'},
+{id:3,name:'Kano State Govt',contact:'+234 900 000 0003',email:'works@kano.gov.ng',location:'Kano',type:'Government',contract:620000000,paid:62000000,status:'Pending'}],
+invoices:[
+{id:'INV-2026-001',client:'Federal Housing Authority',project:'EMJ-001',amount:200000000,issued:'2026-10-15',due:'2026-11-15',status:'Paid'},
+{id:'INV-2026-002',client:'Private Consortium',project:'EMJ-002',amount:150000000,issued:'2026-10-22',due:'2026-11-22',status:'Partial'},
+{id:'INV-2026-003',client:'Kano State Govt',project:'EMJ-003',amount:100000000,issued:'2026-11-01',due:'2026-12-01',status:'Pending'},
+{id:'INV-2026-004',client:'Federal Housing Authority',project:'EMJ-001',amount:120000000,issued:'2026-11-05',due:'2026-12-05',status:'Pending'}],
+activity:[
+{time:'2h ago',text:'Invoice INV-2026-004 issued to Federal Housing Authority'},
+{time:'4h ago',text:'CAT 320 Excavator completed milestone at Estate Phase 1'},
+{time:'Yesterday',text:'Engr. S. Adamu assigned to Road Rehabilitation site'},
+{time:'2 days ago',text:'Commercial Hub milestone 3 signed off by client'},
+{time:'3 days ago',text:'Safety audit passed at Estate Phase 1 (98/100)'}]};
+
+let state={data:null,page:'overview',theme:'dark',tables:{},charts:{}};
+let idleTimer,lockoutTimer,attemptsLeft=MAX_ATTEMPTS,idleListenersAdded=false;
+const TABLE_CONFIGS={};
+
+function loadState(){
+try{const s=localStorage.getItem(LS_KEY);state.data=s?JSON.parse(s).data||JSON.parse(JSON.stringify(DEMO_DATA)):JSON.parse(JSON.stringify(DEMO_DATA));}catch(e){state.data=JSON.parse(JSON.stringify(DEMO_DATA));}
+state.theme=localStorage.getItem(THEME_KEY)||'dark';
+}
+function saveState(){try{localStorage.setItem(LS_KEY,JSON.stringify({data:state.data}));}catch(e){}}
+function resetDemo(){if(!confirm('Reset all data to the original demo? This cannot be undone.'))return;state.data=JSON.parse(JSON.stringify(DEMO_DATA));saveState();toast('Demo data restored','success');navigate(state.page);}
+function applyTheme(){
+document.documentElement.setAttribute('data-theme',state.theme);
+const icon=document.getElementById('themeIcon');
+if(!icon)return;
+if(state.theme==='light')icon.innerHTML='<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>';
+else icon.innerHTML='<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+}
+function toggleTheme(){state.theme=state.theme==='dark'?'light':'dark';localStorage.setItem(THEME_KEY,state.theme);applyTheme();if(state.page==='overview')renderOverview();toast('Theme: '+state.theme,'info');}
+function tryUnlock(){
+const inp=document.getElementById('pinInput'),err=document.getElementById('pinErr'),btn=document.getElementById('pinBtn');
+if(inp.value===PIN){sessionStorage.setItem('emraj_unlocked','1');attemptsLeft=MAX_ATTEMPTS;err.textContent='';document.getElementById('pinLock').classList.add('hidden');document.getElementById('app').style.visibility='visible';startIdleTimer();navigate('overview');}
+else{attemptsLeft--;err.textContent=attemptsLeft>0?`Incorrect PIN. ${attemptsLeft} attempt${attemptsLeft!==1?'s':''} remaining.`:'Too many attempts. Locked for 60 seconds.';inp.value='';inp.focus();if(attemptsLeft<=0){btn.disabled=true;clearTimeout(lockoutTimer);lockoutTimer=setTimeout(()=>{attemptsLeft=MAX_ATTEMPTS;btn.disabled=false;err.textContent='';inp.focus();},LOCKOUT_MS);}}
+}
+function lockNow(){sessionStorage.removeItem('emraj_unlocked');document.getElementById('app').style.visibility='hidden';document.getElementById('pinLock').classList.remove('hidden');document.getElementById('pinInput').value='';document.getElementById('pinErr').textContent='';document.getElementById('pinInput').focus();clearTimeout(idleTimer);}
+function logout(){if(!confirm('Log out of the admin portal?'))return;lockNow();toast('Logged out','info');}
+function startIdleTimer(){
+clearTimeout(idleTimer);
+const reset=()=>{if(!sessionStorage.getItem('emraj_unlocked'))return;clearTimeout(idleTimer);idleTimer=setTimeout(()=>{lockNow();toast('Session locked due to inactivity','info');},IDLE_MS);};
+reset();
+if(!idleListenersAdded){['mousedown','keydown','touchstart','scroll'].forEach(e=>document.addEventListener(e,reset,{passive:true}));idleListenersAdded=true;}
+}
+function fmtN(n){if(n==null)return'—';return'₦'+Math.round(n).toLocaleString('en-NG');}
+function fmtCompact(n){if(n>=1e9)return'₦'+(n/1e9).toFixed(1)+'B';if(n>=1e6)return'₦'+(n/1e6).toFixed(1)+'M';if(n>=1e3)return'₦'+(n/1e3).toFixed(0)+'K';return'₦'+n;}
+function fmtDate(s){if(!s)return'—';const d=new Date(s);if(isNaN(d))return s;return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function statusClass(s){const m={'Active':'green','Starting':'amber','In Repair':'red','Completed':'blue','On-Site':'green','Field Work':'gold','On Leave':'gray','Operational':'green','Paid':'green','Partial':'amber','Pending':'red','Government':'gold','Private':'blue','low':'green','medium':'amber','high':'red','In Progress':'green'};return'pill '+(m[s]||'gray');}
+function escapeHtml(s){if(s==null)return'';return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function uid(){return'TMP-'+Date.now().toString(36).toUpperCase();}
+
+function toast(msg,type='info'){
+const el=document.createElement('div');el.className='toast '+type;
+const icons={success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>',error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>',info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'};
+el.innerHTML=(icons[type]||icons.info)+'<span>'+escapeHtml(msg)+'</span>';
+document.getElementById('toasts').appendChild(el);
+setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .2s';setTimeout(()=>el.remove(),200);},3000);
+}
+function openModal(title,body,footer){
+const bd=document.getElementById('modalBackdrop');
+bd.innerHTML=`<div class="modal" role="dialog" aria-modal="true"><div class="modal-head"><div class="modal-title">${escapeHtml(title)}</div><button class="icon-btn" onclick="closeModal()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="modal-body">${body}</div>${footer?'<div class="modal-foot">'+footer+'</div>':''}</div>`;
+bd.classList.add('open');
+setTimeout(()=>{const f=bd.querySelector('input,select,textarea');if(f)f.focus();},50);
+}
+function closeModal(){const bd=document.getElementById('modalBackdrop');bd.classList.remove('open');bd.innerHTML='';}
+function openSlideover(title,body){
+const p=document.getElementById('slideoverPanel');
+p.innerHTML=`<div class="slideover-head"><div class="modal-title">${escapeHtml(title)}</div><button class="icon-btn" onclick="closeSlideover()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="slideover-body">${body}</div>`;
+document.getElementById('slideover').classList.add('open');
+}
+function closeSlideover(){document.getElementById('slideover').classList.remove('open');}
+function toggleSidebarCollapse(){document.getElementById('sidebar').classList.toggle('collapsed');document.getElementById('main').classList.toggle('sidebar-collapsed');}
+function openMobileSidebar(){document.getElementById('sidebar').classList.add('mobile-open');document.getElementById('sidebarBackdrop').classList.add('open');}
+function closeMobileSidebar(){document.getElementById('sidebar').classList.remove('mobile-open');document.getElementById('sidebarBackdrop').classList.remove('open');}
+function toggleUserMenu(e){e.stopPropagation();const m=document.getElementById('userMenu');const open=m.classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',open);}
+function closeUserMenu(){document.getElementById('userMenu').classList.remove('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.user-menu-wrap'))closeUserMenu();});
+
+function showNotifications(){
+openSlideover('Notifications',`
+<div class="alert-item"><div class="alert-icon warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="alert-text">JCB 3CX Backhoe needs repair<small>Maintenance due 5 days ago · Fleet</small></div></div>
+<div class="alert-item"><div class="alert-icon warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="alert-text">INV-2026-004 payment due in 24 days<small>₦120,000,000 · Finance</small></div></div>
+<div class="alert-item"><div class="alert-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div><div class="alert-text">Road Rehabilitation deadline approaching<small>Feb 28, 2027 · Project</small></div></div>
+<div class="alert-item"><div class="alert-icon danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div><div class="alert-text">Mr. K. Eze is on leave today<small>Staff availability</small></div></div>`);
+}
+
+const gs=document.getElementById('globalSearch');
+if(gs)gs.addEventListener('input',e=>{
+const q=e.target.value.trim().toLowerCase();if(!q)return;
+const p=state.data.projects.find(x=>x.name.toLowerCase().includes(q)||x.id.toLowerCase().includes(q));
+if(p){openSlideover('Project: '+p.name,renderProjectDetail(p));return;}
+const s=state.data.staff.find(x=>x.name.toLowerCase().includes(q));
+if(s){openSlideover('Staff: '+s.name,renderStaffDetail(s));return;}
+const c=state.data.clients.find(x=>x.name.toLowerCase().includes(q));
+if(c){openSlideover('Client: '+c.name,renderClientDetail(c));return;}
+});
+
+function navigate(page){
+state.page=page;closeMobileSidebar();
+document.querySelectorAll('.side-item[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+document.querySelectorAll('.tab-item').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+const titles={overview:'Overview',projects:'Projects',fleet:'Fleet',staff:'Staff',clients:'Clients',finance:'Invoices',reports:'Reports'};
+document.getElementById('pageTitle').textContent=titles[page]||'Overview';
+Object.values(state.charts).forEach(c=>{try{c.destroy();}catch(e){}});state.charts={};
+const content=document.getElementById('content');
+content.innerHTML='<div class="card"><div class="skeleton" style="height:120px;margin-bottom:12px"></div><div class="skeleton" style="height:24px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:24px;width:40%"></div></div>';
+setTimeout(()=>{switch(page){case'overview':renderOverview();break;case'projects':renderProjects();break;case'fleet':renderFleet();break;case'staff':renderStaff();break;case'clients':renderClients();break;case'finance':renderFinance();break;case'reports':renderReports();break;}},180);
+}
+
+function kpiCard(label,value,trendDir,trendText,color,iconPath,sparkData){
+const trendCls=trendDir==='up'?'up':trendDir==='down'?'down':'neutral';
+const arrow=trendDir==='up'?'↑':trendDir==='down'?'↓':'→';
+return `<div class="kpi"><div class="kpi-head"><div class="kpi-icon ${color}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconPath}</svg></div></div><div><div class="kpi-label">${label}</div><div class="kpi-value">${value}</div></div><div class="kpi-trend ${trendCls}">${arrow} ${trendText}</div><canvas class="spark" data-spark='${JSON.stringify(sparkData)}'></canvas></div>`;
+}
+
+function renderOverview(){
+const d=state.data;
+const totalContracts=d.projects.reduce((s,p)=>s+p.budget,0);
+const fleetValue=d.fleet.reduce((s,f)=>s+f.value,0);
+const pendingInv=d.invoices.filter(i=>i.status!=='Paid').reduce((s,i)=>s+i.amount,0);
+const activeProjects=d.projects.filter(p=>p.status==='Active').length;
+const monthlySpend=85000000;
+const html=`
+<div class="grid grid-kpi mb-4">
+${kpiCard('Active Projects',activeProjects+' / '+d.projects.length,'up','+1 tender this month','gold','M3 7l9-4 9 4M3 7v10l9 4 9-4V7M12 11v10',[3,3,4,3,4,4,3])}
+${kpiCard('Contract Value',fmtCompact(totalContracts),'up','+₦620M since Oct','green','M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6',[4,5,5,6,6,7,8])}
+${kpiCard('Fleet Value',fmtCompact(fleetValue),'up','9 heavy machines','blue','M14 7l-4 4 4 4M10 3v18',[5,5,6,6,6,7,7])}
+${kpiCard('Staff On Site',96,'up','96 of 128 today','green','M3 21v-2a6 6 0 0112 0v2M9 11a3 3 0 100-6 3 3 0 000 6z',[60,72,68,80,88,92,96])}
+${kpiCard('Monthly Spend',fmtCompact(monthlySpend),'down','-4.2% vs Oct','warn','M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6',[90,88,84,82,80,83,85])}
+${kpiCard('Pending Invoices',fmtCompact(pendingInv),'up','3 awaiting payment','danger','M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6',[3,3,2,3,3,3,3])}
+</div>
+<div class="grid grid-charts mb-4">
+<div class="card"><div class="card-head"><div><div class="card-title">Budget vs Actual Spend</div><div class="card-subtitle">Per active project · ₦ millions</div></div></div><div class="chart-wrap"><canvas id="chartBudget"></canvas></div></div>
+<div class="card"><div class="card-head"><div><div class="card-title">Project Completion</div><div class="card-subtitle">Portfolio status distribution</div></div></div><div class="chart-wrap"><canvas id="chartCompletion"></canvas></div></div>
+</div>
+<div class="grid grid-charts mb-4">
+<div class="card"><div class="card-head"><div><div class="card-title">Revenue vs Expenses</div><div class="card-subtitle">Last 6 months</div></div></div><div class="chart-wrap tall"><canvas id="chartRevenue"></canvas></div></div>
+<div class="card"><div class="card-head"><div><div class="card-title">Equipment Status</div><div class="card-subtitle">Fleet breakdown</div></div></div><div class="chart-wrap tall"><canvas id="chartEquip"></canvas></div></div>
+</div>
+<div class="grid grid-2 mb-4">
+<div class="card">
+<div class="card-head"><div class="card-title">Alerts & Warnings</div><span class="pill amber">4 active</span></div>
+<div class="alert-item"><div class="alert-icon warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="alert-text"><b>Maintenance overdue</b><small>JCB 3CX Backhoe · 5 days overdue</small></div></div>
+<div class="alert-item"><div class="alert-icon warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><div class="alert-text"><b>Deadline approaching</b><small>Road Rehabilitation · 109 days</small></div></div>
+<div class="alert-item"><div class="alert-icon danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div><div class="alert-text"><b>High risk project</b><small>Road Rehabilitation flagged high-risk</small></div></div>
+<div class="alert-item"><div class="alert-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div><div class="alert-text"><b>Staff on leave</b><small>Mr. K. Eze · returns Friday</small></div></div>
+</div>
+<div class="card"><div class="card-head"><div class="card-title">Recent Activity</div></div><div class="timeline">${d.activity.map(a=>`<div class="timeline-item"><p>${escapeHtml(a.text)}</p><time>${escapeHtml(a.time)}</time></div>`).join('')}</div></div>
+</div>
+<div class="card">
+<div class="card-head"><div><div class="card-title">Active Project Progress</div><div class="card-subtitle">Click a row to view details</div></div></div>
+${d.projects.filter(p=>p.status!=='Completed').map(p=>`<div style="padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer" onclick="openProjectDetail('${p.id}')"><div class="flex items-center justify-between mb-2"><div><div class="fw-600" style="font-size:14px">${escapeHtml(p.name)}</div><div class="text-sm text-muted">${escapeHtml(p.location)} · ${escapeHtml(p.manager)}</div></div><span class="${statusClass(p.status)}">${p.status}</span></div><div class="flex items-center gap-3"><div class="progress" style="flex:1"><div class="progress-bar ${p.risk==='high'?'red':p.risk==='medium'?'amber':''}" style="width:${p.completion}%"></div></div><span class="text-sm fw-600" style="min-width:40px;text-align:right">${p.completion}%</span></div></div>`).join('')}
+</div>`;
+document.getElementById('content').innerHTML=html;
+drawOverviewCharts();
+}
+
+function drawOverviewCharts(){
+Object.values(state.charts).forEach(c=>{try{c.destroy();}catch(e){}});state.charts={};
+if(typeof Chart==='undefined')return;
+const isDark=state.theme==='dark';
+const textColor=isDark?'#94A3B8':'#64748B';
+const gridColor=isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+const gold='#D4AF37',emerald='#10B981',blue='#3B82F6',warn='#F59E0B',danger='#EF4444';
+document.querySelectorAll('canvas.spark').forEach(c=>{
+const data=JSON.parse(c.dataset.spark);
+new Chart(c,{type:'line',data:{labels:data.map((_,i)=>i),datasets:[{data,borderColor:gold,borderWidth:1.5,pointRadius:0,tension:0.4,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}}});
+});
+const commonOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:textColor,font:{size:11,family:'Inter'}}}},scales:{x:{grid:{color:gridColor},ticks:{color:textColor,font:{size:10}}},y:{grid:{color:gridColor},ticks:{color:textColor,font:{size:10}}}}};
+try{
+state.charts.budget=new Chart(document.getElementById('chartBudget'),{type:'bar',data:{labels:state.data.projects.map(p=>p.name.replace('Emraj ','').slice(0,12)),datasets:[{label:'Budget',data:state.data.projects.map(p=>p.budget/1e6),backgroundColor:gold,borderRadius:6,maxBarThickness:28},{label:'Spent',data:state.data.projects.map(p=>p.spend/1e6),backgroundColor:blue,borderRadius:6,maxBarThickness:28}]},options:commonOpts});
+const byStatus={};state.data.projects.forEach(p=>{byStatus[p.status]=(byStatus[p.status]||0)+1;});
+state.charts.completion=new Chart(document.getElementById('chartCompletion'),{type:'doughnut',data:{labels:Object.keys(byStatus),datasets:[{data:Object.values(byStatus),backgroundColor:[emerald,warn,blue,gold],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:textColor,font:{size:11},padding:12}}}}});
+state.charts.revenue=new Chart(document.getElementById('chartRevenue'),{type:'line',data:{labels:['Jun','Jul','Aug','Sep','Oct','Nov'],datasets:[{label:'Revenue',data:[180,220,195,260,310,285],borderColor:emerald,backgroundColor:'rgba(16,185,129,0.1)',fill:true,tension:0.4,borderWidth:2,pointRadius:3},{label:'Expenses',data:[150,180,165,210,240,225],borderColor:danger,backgroundColor:'rgba(239,68,68,0.1)',fill:true,tension:0.4,borderWidth:2,pointRadius:3}]},options:{...commonOpts,scales:{x:{grid:{color:gridColor},ticks:{color:textColor}},y:{grid:{color:gridColor},ticks:{color:textColor,callback:v=>'₦'+v+'M'}}}}});
+const eqStatus={};state.data.fleet.forEach(f=>{eqStatus[f.condition]=(eqStatus[f.condition]||0)+1;});
+state.charts.equip=new Chart(document.getElementById('chartEquip'),{type:'pie',data:{labels:Object.keys(eqStatus),datasets:[{data:Object.values(eqStatus),backgroundColor:[emerald,danger,blue,gold],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:textColor,font:{size:11},padding:12}}}}});
+}catch(e){}
+}
+
+function getTableState(key){if(!state.tables[key])state.tables[key]={search:'',sort:null,sortDir:'asc',page:1,filter:'all'};return state.tables[key];}
+
+function renderTable(config){
+const{key,columns,rows,perPage=8,statusKey,onRowClick,actions}=config;
+const t=getTableState(key);
+let filtered=rows.slice();
+if(t.search){const q=t.search.toLowerCase();filtered=filtered.filter(r=>columns.some(c=>String(r[c.key]||'').toLowerCase().includes(q)));}
+if(t.filter!=='all'&&statusKey){filtered=filtered.filter(r=>r[statusKey]===t.filter);}
+if(t.sort){filtered.sort((a,b)=>{const av=a[t.sort],bv=b[t.sort];const cmp=typeof av==='number'?av-bv:String(av).localeCompare(String(bv));return t.sortDir==='asc'?cmp:-cmp;});}
+const total=filtered.length;
+const pages=Math.max(1,Math.ceil(total/perPage));
+if(t.page>pages)t.page=pages;
+const start=(t.page-1)*perPage;
+const pageRows=filtered.slice(start,start+perPage);
+const filters=statusKey?[...new Set(rows.map(r=>r[statusKey]))]:[];
+let html=`<div class="table-toolbar">
+<div class="toolbar-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search…" value="${escapeHtml(t.search)}" oninput="updateTable('${key}','search',this.value)" aria-label="Search table"></div>
+${filters.length?`<div class="select-wrap"><select onchange="updateTable('${key}','filter',this.value)" aria-label="Filter"><option value="all"${t.filter==='all'?' selected':''}>All statuses</option>${filters.map(f=>`<option value="${escapeHtml(f)}"${t.filter===f?' selected':''}>${escapeHtml(f)}</option>`).join('')}</select></div>`:''}
+${actions||''}
+<button class="btn btn-ghost btn-sm" onclick="exportCSV('${key}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>CSV</button>
+<button class="btn btn-ghost btn-sm" onclick="window.print()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>Print</button>
+</div>
+<div class="table-wrap"><table><thead><tr>${columns.map(c=>`<th onclick="sortTable('${key}','${c.key}')" ${t.sort===c.key?'class="sorted"':''}>${escapeHtml(c.label)}${t.sort===c.key?`<span class="sort-arrow">${t.sortDir==='asc'?'▲':'▼'}</span>`:''}</th>`).join('')}</tr></thead><tbody>
+${pageRows.length===0?`<tr><td colspan="${columns.length}"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg><h3>No results</h3><p>Try adjusting your search or filter.</p></div></td></tr>`:pageRows.map(r=>`<tr onclick="rowAction('${key}','${escapeHtml(String(r.id))}')">${columns.map(c=>`<td data-label="${escapeHtml(c.label)}">${c.render?c.render(r[c.key],r):escapeHtml(r[c.key])}</td>`).join('')}</tr>`).join('')}
+</tbody></table></div>
+<div class="pagination"><div class="pagination-info">Showing ${total===0?0:start+1}–${Math.min(start+perPage,total)} of ${total}</div><div class="pagination-controls"><button class="page-btn" onclick="gotoPage('${key}',${t.page-1})" ${t.page<=1?'disabled':''} aria-label="Previous">‹</button>${Array.from({length:pages},(_,i)=>i+1).slice(Math.max(0,t.page-2),Math.max(0,t.page-2)+5).map(p=>`<button class="page-btn ${p===t.page?'active':''}" onclick="gotoPage('${key}',${p})">${p}</button>`).join('')}<button class="page-btn" onclick="gotoPage('${key}',${t.page+1})" ${t.page>=pages?'disabled':''} aria-label="Next">›</button></div></div>`;
+return html;
+}
+function registerTable(key,config){TABLE_CONFIGS[key]=config;}
+function updateTable(key,field,val){const t=getTableState(key);t[field]=val;if(field!=='page')t.page=1;rerenderPage();}
+function sortTable(key,col){const t=getTableState(key);if(t.sort===col)t.sortDir=t.sortDir==='asc'?'desc':'asc';else{t.sort=col;t.sortDir='asc';}rerenderPage();}
+function gotoPage(key,p){const t=getTableState(key);t.page=Math.max(1,p);rerenderPage();}
+function rowAction(key,id){const cfg=TABLE_CONFIGS[key];if(cfg&&cfg.onRowClick)cfg.onRowClick(id);}
+function exportCSV(key){const cfg=TABLE_CONFIGS[key];if(!cfg)return;const cols=cfg.columns.filter(c=>c.key);const header=cols.map(c=>c.label).join(',');const rows=cfg.rows.map(r=>cols.map(c=>`"${String(r[c.key]??'').replace(/"/g,'""')}"`).join(','));const csv=[header,...rows].join('\n');const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='emraj-'+key+'-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(a.href);toast('Exported '+key+'.csv','success');}
+function rerenderPage(){const p=state.page;if(p==='projects')renderProjects();else if(p==='fleet')renderFleet();else if(p==='staff')renderStaff();else if(p==='clients')renderClients();else if(p==='finance')renderFinance();}
+
+function renderProjects(){
+const d=state.data;
+const columns=[
+{key:'id',label:'ID',render:v=>`<span class="text-muted" style="font-family:monospace;font-size:11px">${escapeHtml(v)}</span>`},
+{key:'name',label:'Project',render:v=>`<span class="fw-600">${escapeHtml(v)}</span>`},
+{key:'location',label:'Location'},
+{key:'manager',label:'Manager'},
+{key:'budget',label:'Budget',render:v=>fmtN(v)},
+{key:'completion',label:'Progress',render:(v,r)=>`<div style="display:flex;align-items:center;gap:8px;min-width:100px"><div class="progress" style="flex:1"><div class="progress-bar ${r.risk==='high'?'red':r.risk==='medium'?'amber':''}" style="width:${v}%"></div></div><span class="text-sm fw-600">${v}%</span></div>`},
+{key:'status',label:'Status',render:v=>`<span class="${statusClass(v)}">${escapeHtml(v)}</span>`}];
+const config={key:'projects',columns,rows:d.projects,statusKey:'status',onRowClick:id=>openProjectDetail(id),actions:`<button class="btn btn-primary btn-sm" onclick="openProjectForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 5v14M5 12h14"/></svg>New Project</button>`};
+registerTable('projects',config);
+document.getElementById('content').innerHTML=`<div class="card mb-4"><div class="card-head"><div><div class="card-title">Gantt Timeline</div><div class="card-subtitle">Project schedule overview</div></div></div>${renderGantt()}</div><div class="card"><div class="card-head"><div><div class="card-title">All Projects</div><div class="card-subtitle">${d.projects.length} total</div></div></div>${renderTable(config)}</div>`;
+}
+function renderGantt(){const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const rows=state.data.projects.map(p=>{const startM=new Date(p.start).getMonth();const endM=new Date(p.deadline).getMonth();const leftPct=(startM/12)*100;const widthPct=((endM-startM+1)/12)*100;const color=p.status==='Completed'?'green':p.risk==='high'?'red':p.risk==='medium'?'amber':'';return`<div class="gantt-row-name">${escapeHtml(p.name.slice(0,20))}</div><div class="gantt-track"><div class="gantt-bar ${color}" style="left:${leftPct}%;width:${widthPct}%" title="${p.completion}% complete"></div></div>`;}).join('');return`<div class="gantt"><div class="gantt-grid"><div style="border-bottom:1px solid var(--line)"></div><div class="gantt-months">${months.map(m=>`<div class="gantt-month">${m}</div>`).join('')}</div>${rows}</div></div>`;}
+function openProjectDetail(id){const p=state.data.projects.find(x=>x.id===id);if(!p)return;openSlideover(p.name,renderProjectDetail(p));}
+function renderProjectDetail(p){const usedPct=Math.round(p.spend/p.budget*100);return`<div class="mb-4"><span class="${statusClass(p.status)}">${p.status}</span> <span class="${statusClass(p.risk)}" style="margin-left:6px">${p.risk} risk</span></div><div class="grid grid-2" style="gap:12px;margin-bottom:20px"><div><div class="text-sm text-muted">Project ID</div><div class="fw-600" style="font-family:monospace">${p.id}</div></div><div><div class="text-sm text-muted">Location</div><div class="fw-600">${escapeHtml(p.location)}</div></div><div><div class="text-sm text-muted">Manager</div><div class="fw-600">${escapeHtml(p.manager)}</div></div><div><div class="text-sm text-muted">Client</div><div class="fw-600">${escapeHtml(p.client)}</div></div><div><div class="text-sm text-muted">Start</div><div class="fw-600">${fmtDate(p.start)}</div></div><div><div class="text-sm text-muted">Deadline</div><div class="fw-600">${fmtDate(p.deadline)}</div></div></div><div class="report-section"><h3>Budget</h3><div class="report-row"><span>Total</span><span>${fmtN(p.budget)}</span></div><div class="report-row"><span>Spent</span><span>${fmtN(p.spend)}</span></div><div class="report-row"><span>Remaining</span><span>${fmtN(p.budget-p.spend)}</span></div><div class="report-row"><span>Budget Used</span><span>${usedPct}%</span></div></div><div class="report-section"><h3>Progress</h3><div class="flex items-center gap-3 mb-2"><div class="progress" style="flex:1"><div class="progress-bar" style="width:${p.completion}%"></div></div><span class="fw-600">${p.completion}%</span></div></div><div style="display:flex;gap:8px;margin-top:20px"><button class="btn btn-primary" onclick="openProjectForm('${p.id}')">Edit Project</button><button class="btn btn-danger" onclick="deleteProject('${p.id}')">Delete</button></div>`;}
+function openProjectForm(id){const p=id?state.data.projects.find(x=>x.id===id):null;openModal(p?'Edit Project':'New Project',`<div class="form-group"><label class="form-label">Project Name</label><input class="form-input" id="f_name" value="${escapeHtml(p?.name||'')}"><div class="form-error" id="e_name"></div></div><div class="form-group"><label class="form-label">Client</label><input class="form-input" id="f_client" value="${escapeHtml(p?.client||'')}"></div><div class="form-group"><label class="form-label">Location</label><input class="form-input" id="f_location" value="${escapeHtml(p?.location||'')}"></div><div class="form-group"><label class="form-label">Manager</label><input class="form-input" id="f_manager" value="${escapeHtml(p?.manager||'')}"></div><div class="form-group"><label class="form-label">Budget (₦)</label><input class="form-input" type="number" id="f_budget" value="${p?.budget||0}"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="f_status">${['Active','Starting','Completed'].map(s=>`<option ${p?.status===s?'selected':''}>${s}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Completion %</label><input class="form-input" type="number" id="f_completion" value="${p?.completion||0}" min="0" max="100"></div>`,`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveProject(${p?`'${p.id}'`:'null'})">${p?'Save':'Create'}</button>`);}
+function saveProject(id){const name=document.getElementById('f_name').value.trim();if(!name){document.getElementById('e_name').textContent='Name required';return;}const data={name,client:document.getElementById('f_client').value.trim(),location:document.getElementById('f_location').value.trim(),manager:document.getElementById('f_manager').value.trim(),budget:+document.getElementById('f_budget').value||0,completion:Math.min(100,Math.max(0,+document.getElementById('f_completion').value||0)),status:document.getElementById('f_status').value};if(id){Object.assign(state.data.projects.find(x=>x.id===id),data);toast('Project updated','success');}else{state.data.projects.push({id:uid(),spend:0,start:new Date().toISOString().slice(0,10),deadline:'2027-12-31',risk:'low',...data});toast('Project created','success');}saveState();closeModal();closeSlideover();renderProjects();}
+function deleteProject(id){if(!confirm('Delete this project?'))return;state.data.projects=state.data.projects.filter(x=>x.id!==id);saveState();closeSlideover();renderProjects();toast('Project deleted','success');}
+
+function renderFleet(){
+const d=state.data;
+const columns=[
+{key:'id',label:'Asset ID',render:v=>`<span class="text-muted" style="font-family:monospace;font-size:11px">${escapeHtml(v)}</span>`},
+{key:'name',label:'Equipment',render:v=>`<span class="fw-600">${escapeHtml(v)}</span>`},
+{key:'site',label:'Assigned Site'},
+{key:'utilization',label:'Utilization',render:v=>`<div class="flex items-center gap-2"><div class="progress" style="width:60px"><div class="progress-bar ${v>70?'green':v>40?'amber':'red'}" style="width:${v}%"></div></div><span class="text-sm">${v}%</span></div>`},
+{key:'nextMaint',label:'Next Service',render:v=>fmtDate(v)},
+{key:'condition',label:'Condition',render:v=>`<span class="${statusClass(v)}">${escapeHtml(v)}</span>`}];
+const config={key:'fleet',columns,rows:d.fleet,statusKey:'condition',onRowClick:id=>openFleetDetail(id),actions:`<button class="btn btn-primary btn-sm" onclick="openFleetForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 5v14M5 12h14"/></svg>Add Asset</button>`};
+registerTable('fleet',config);
+document.getElementById('content').innerHTML=`<div class="grid grid-4 mb-4"><div class="card"><div class="kpi-label">Total Machines</div><div class="kpi-value" style="font-size:22px">${d.fleet.length}</div></div><div class="card"><div class="kpi-label">Operational</div><div class="kpi-value" style="font-size:22px;color:var(--emerald)">${d.fleet.filter(f=>f.condition==='Operational').length}</div></div><div class="card"><div class="kpi-label">In Repair</div><div class="kpi-value" style="font-size:22px;color:var(--danger)">${d.fleet.filter(f=>f.condition==='In Repair').length}</div></div><div class="card"><div class="kpi-label">Fleet Value</div><div class="kpi-value" style="font-size:22px">${fmtCompact(d.fleet.reduce((s,f)=>s+f.value,0))}</div></div></div><div class="card"><div class="card-head"><div class="card-title">Fleet Directory</div></div>${renderTable(config)}</div>`;
+}
+function openFleetDetail(id){const f=state.data.fleet.find(x=>x.id===id);if(!f)return;openSlideover(f.name,`<span class="${statusClass(f.condition)}">${f.condition}</span><div class="grid grid-2 mt-4" style="gap:12px"><div><div class="text-sm text-muted">Asset ID</div><div class="fw-600" style="font-family:monospace">${f.id}</div></div><div><div class="text-sm text-muted">Type</div><div class="fw-600">${f.type}</div></div><div><div class="text-sm text-muted">Site</div><div class="fw-600">${escapeHtml(f.site)}</div></div><div><div class="text-sm text-muted">Value</div><div class="fw-600">${fmtN(f.value)}</div></div><div><div class="text-sm text-muted">Utilization</div><div class="fw-600">${f.utilization}%</div></div><div><div class="text-sm text-muted">Next Service</div><div class="fw-600">${fmtDate(f.nextMaint)}</div></div><div><div class="text-sm text-muted">Services</div><div class="fw-600">${f.services}</div></div></div><div class="report-section mt-4"><h3>Service History</h3><div class="report-row"><span>Oil & Filter Change</span><span class="text-muted">Oct 12, 2026</span></div><div class="report-row"><span>Hydraulic Inspection</span><span class="text-muted">Aug 04, 2026</span></div><div class="report-row"><span>Full Service</span><span class="text-muted">May 20, 2026</span></div></div><div style="display:flex;gap:8px;margin-top:20px"><button class="btn btn-primary" onclick="openFleetForm('${f.id}')">Edit</button><button class="btn btn-danger" onclick="deleteFleet('${f.id}')">Delete</button></div>`);}
+function openFleetForm(id){const f=id?state.data.fleet.find(x=>x.id===id):null;openModal(f?'Edit Asset':'Add Asset',`<div class="form-group"><label class="form-label">Asset Name</label><input class="form-input" id="ff_name" value="${escapeHtml(f?.name||'')}"></div><div class="form-group"><label class="form-label">Type</label><input class="form-input" id="ff_type" value="${escapeHtml(f?.type||'')}"></div><div class="form-group"><label class="form-label">Site</label><input class="form-input" id="ff_site" value="${escapeHtml(f?.site||'')}"></div><div class="form-group"><label class="form-label">Condition</label><select class="form-select" id="ff_condition">${['Operational','In Repair','Idle'].map(s=>`<option ${f?.condition===s?'selected':''}>${s}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Utilization %</label><input class="form-input" type="number" id="ff_util" value="${f?.utilization||0}" min="0" max="100"></div><div class="form-group"><label class="form-label">Value (₦)</label><input class="form-input" type="number" id="ff_value" value="${f?.value||0}"></div>`,`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveFleet(${f?`'${f.id}'`:'null'})">${f?'Save':'Create'}</button>`);}
+function saveFleet(id){const data={name:document.getElementById('ff_name').value.trim(),type:document.getElementById('ff_type').value.trim(),site:document.getElementById('ff_site').value.trim(),condition:document.getElementById('ff_condition').value,utilization:+document.getElementById('ff_util').value||0,value:+document.getElementById('ff_value').value||0};if(!data.name){toast('Name required','error');return;}if(id){Object.assign(state.data.fleet.find(x=>x.id===id),data);toast('Asset updated','success');}else{state.data.fleet.push({id:uid(),nextMaint:'2027-01-01',services:0,...data});toast('Asset added','success');}saveState();closeModal();closeSlideover();renderFleet();}
+function deleteFleet(id){if(!confirm('Delete this asset?'))return;state.data.fleet=state.data.fleet.filter(x=>x.id!==id);saveState();closeSlideover();renderFleet();toast('Asset deleted','success');}
+
+function renderStaff(){
+const d=state.data;
+const payroll=d.staff.reduce((s,x)=>s+(x.rate*26),0);
+const columns=[
+{key:'name',label:'Name',render:v=>`<span class="fw-600">${escapeHtml(v)}</span>`},
+{key:'role',label:'Role'},
+{key:'site',label:'Site'},
+{key:'rate',label:'Daily Rate',render:v=>fmtN(v)},
+{key:'attendance',label:'Attendance',render:v=>`<span style="color:${v>=90?'var(--emerald)':v>=80?'var(--warn)':'var(--danger)'}">${v}%</span>`},
+{key:'status',label:'Status',render:v=>`<span class="${statusClass(v)}">${escapeHtml(v)}</span>`}];
+const config={key:'staff',columns,rows:d.staff,statusKey:'status',onRowClick:id=>openStaffDetail(+id),actions:`<button class="btn btn-primary btn-sm" onclick="openStaffForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 5v14M5 12h14"/></svg>Add Staff</button>`};
+registerTable('staff',config);
+document.getElementById('content').innerHTML=`<div class="grid grid-4 mb-4"><div class="card"><div class="kpi-label">Total Staff</div><div class="kpi-value" style="font-size:22px">128</div></div><div class="card"><div class="kpi-label">On-Site Today</div><div class="kpi-value" style="font-size:22px;color:var(--emerald)">${d.staff.filter(s=>s.status==='On-Site').length*12}</div></div><div class="card"><div class="kpi-label">On Leave</div><div class="kpi-value" style="font-size:22px;color:var(--warn)">${d.staff.filter(s=>s.status==='On Leave').length*12}</div></div><div class="card"><div class="kpi-label">Monthly Payroll Est.</div><div class="kpi-value" style="font-size:22px">${fmtCompact(payroll)}</div></div></div><div class="card"><div class="card-head"><div class="card-title">Staff Directory</div></div>${renderTable(config)}</div>`;
+}
+function openStaffDetail(id){const s=state.data.staff.find(x=>x.id===id);if(!s)return;openSlideover(s.name,renderStaffDetail(s));}
+function renderStaffDetail(s){return`<span class="${statusClass(s.status)}">${s.status}</span><div class="grid grid-2 mt-4" style="gap:12px"><div><div class="text-sm text-muted">Role</div><div class="fw-600">${escapeHtml(s.role)}</div></div><div><div class="text-sm text-muted">Site</div><div class="fw-600">${escapeHtml(s.site)}</div></div><div><div class="text-sm text-muted">Daily Rate</div><div class="fw-600">${fmtN(s.rate)}</div></div><div><div class="text-sm text-muted">Attendance</div><div class="fw-600">${s.attendance}%</div></div><div><div class="text-sm text-muted">Phone</div><div class="fw-600">${escapeHtml(s.phone||'—')}</div></div><div><div class="text-sm text-muted">Monthly Est.</div><div class="fw-600">${fmtN(s.rate*26)}</div></div></div><div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">${s.phone?`<a href="tel:${s.phone}" class="btn btn-primary">Call</a><a href="https://wa.me/${s.phone.replace(/[^0-9]/g,'')}" target="_blank" class="btn btn-ghost">WhatsApp</a>`:''}<button class="btn btn-ghost" onclick="openStaffForm(${s.id})">Edit</button><button class="btn btn-danger" onclick="deleteStaff(${s.id})">Delete</button></div>`;}
+function openStaffForm(id){const s=id?state.data.staff.find(x=>x.id===id):null;openModal(s?'Edit Staff':'Add Staff',`<div class="form-group"><label class="form-label">Name</label><input class="form-input" id="fs_name" value="${escapeHtml(s?.name||'')}"></div><div class="form-group"><label class="form-label">Role</label><input class="form-input" id="fs_role" value="${escapeHtml(s?.role||'')}"></div><div class="form-group"><label class="form-label">Site</label><input class="form-input" id="fs_site" value="${escapeHtml(s?.site||'')}"></div><div class="form-group"><label class="form-label">Daily Rate (₦)</label><input class="form-input" type="number" id="fs_rate" value="${s?.rate||0}"></div><div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="fs_phone" value="${escapeHtml(s?.phone||'')}"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="fs_status">${['On-Site','Field Work','On Leave'].map(x=>`<option ${s?.status===x?'selected':''}>${x}</option>`).join('')}</select></div>`,`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveStaff(${s?s.id:'null'})">${s?'Save':'Create'}</button>`);}
+function saveStaff(id){const data={name:document.getElementById('fs_name').value.trim(),role:document.getElementById('fs_role').value.trim(),site:document.getElementById('fs_site').value.trim(),rate:+document.getElementById('fs_rate').value||0,phone:document.getElementById('fs_phone').value.trim(),status:document.getElementById('fs_status').value};if(!data.name){toast('Name required','error');return;}if(id){Object.assign(state.data.staff.find(x=>x.id===id),data);toast('Staff updated','success');}else{state.data.staff.push({id:Date.now(),attendance:0,...data});toast('Staff added','success');}saveState();closeModal();closeSlideover();renderStaff();}
+function deleteStaff(id){if(!confirm('Remove this staff member?'))return;state.data.staff=state.data.staff.filter(x=>x.id!==id);saveState();closeSlideover();renderStaff();toast('Staff removed','success');}
+
+function renderClients(){
+const d=state.data;
+const columns=[
+{key:'name',label:'Client',render:v=>`<span class="fw-600">${escapeHtml(v)}</span>`},
+{key:'type',label:'Type',render:v=>`<span class="${statusClass(v)}">${escapeHtml(v)}</span>`},
+{key:'contact',label:'Contact'},
+{key:'contract',label:'Contract',render:v=>fmtN(v)},
+{key:'paid',label:'Paid',render:v=>fmtN(v)},
+{key:'status',label:'Payment',render:v=>`<span class="${statusClass(v)}">${escapeHtml(v)}</span>`}];
+const config={key:'clients',columns,rows:d.clients,statusKey:'status',onRowClick:id=>openClientDetail(+id),actions:`<button class="btn btn-primary btn-sm" onclick="openClientForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 5v14M5 12h14"/></svg>Add Client</button>`};
+registerTable('clients',config);
+document.getElementById('content').innerHTML=`<div class="grid grid-3 mb-4"><div class="card"><div class="kpi-label">Total Clients</div><div class="kpi-value" style="font-size:22px">${d.clients.length}</div></div><div class="card"><div class="kpi-label">Contract Value</div><div class="kpi-value" style="font-size:22px">${fmtCompact(d.clients.reduce((s,c)=>s+c.contract,0))}</div></div><div class="card"><div class="kpi-label">Outstanding</div><div class="kpi-value" style="font-size:22px;color:var(--warn)">${fmtCompact(d.clients.reduce((s,c)=>s+c.contract-c.paid,0))}</div></div></div><div class="card"><div class="card-head"><div class="card-title">Client Directory</div></div>${renderTable(config)}</div>`;
+}
+function openClientDetail(id){const c=state.data.clients.find(x=>x.id===id);if(!c)return;openSlideover(c.name,renderClientDetail(c));}
+function renderClientDetail(c){return`<span class="${statusClass(c.status)}">${c.status}</span><div class="grid grid-2 mt-4" style="gap:12px"><div><div class="text-sm text-muted">Type</div><div class="fw-600">${c.type}</div></div><div><div class="text-sm text-muted">Location</div><div class="fw-600">${escapeHtml(c.location)}</div></div><div><div class="text-sm text-muted">Phone</div><div class="fw-600">${escapeHtml(c.contact)}</div></div><div><div class="text-sm text-muted">Email</div><div class="fw-600">${escapeHtml(c.email)}</div></div></div><div class="report-section mt-4"><h3>Contract</h3><div class="report-row"><span>Total</span><span>${fmtN(c.contract)}</span></div><div class="report-row"><span>Paid</span><span>${fmtN(c.paid)}</span></div><div class="report-row"><span>Outstanding</span><span>${fmtN(c.contract-c.paid)}</span></div></div><div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap"><a href="tel:${c.contact}" class="btn btn-primary">Call</a><a href="https://wa.me/${c.contact.replace(/[^0-9]/g,'')}" target="_blank" class="btn btn-ghost">WhatsApp</a><a href="mailto:${c.email}" class="btn btn-ghost">Email</a><button class="btn btn-ghost" onclick="openClientForm(${c.id})">Edit</button><button class="btn btn-danger" onclick="deleteClient(${c.id})">Delete</button></div>`;}
+function openClientForm(id){const c=id?state.data.clients.find(x=>x.id===id):null;openModal(c?'Edit Client':'Add Client',`<div class="form-group"><label class="form-label">Name</label><input class="form-input" id="fc_name" value="${escapeHtml(c?.name||'')}"></div><div class="form-group"><label class="form-label">Type</label><select class="form-select" id="fc_type">${['Government','Private'].map(x=>`<option ${c?.type===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Location</label><input class="form-input" id="fc_location" value="${escapeHtml(c?.location||'')}"></div><div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="fc_contact" value="${escapeHtml(c?.contact||'')}"></div><div class="form-group"><label class="form-label">Email</label><input class="form-input" id="fc_email" value="${escapeHtml(c?.email||'')}"></div><div class="form-group"><label class="form-label">Contract (₦)</label><input class="form-input" type="number" id="fc_contract" value="${c?.contract||0}"></div><div class="form-group"><label class="form-label">Paid (₦)</label><input class="form-input" type="number" id="fc_paid" value="${c?.paid||0}"></div>`,`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveClient(${c?c.id:'null'})">${c?'Save':'Create'}</button>`);}
+function saveClient(id){const data={name:document.getElementById('fc_name').value.trim(),type:document.getElementById('fc_type').value,location:document.getElementById('fc_location').value.trim(),contact:document.getElementById('fc_contact').value.trim(),email:document.getElementById('fc_email').value.trim(),contract:+document.getElementById('fc_contract').value||0,paid:+document.getElementById('fc_paid').value||0};data.status=data.paid>=data.contract?'Paid':data.paid>0?'Partial':'Pending';if(!data.name){toast('Name required','error');return;}if(id){Object.assign(state.data.clients.find(x=>x.id===id),data);toast('Client updated','success');}else{state.data.clients.push({id:Date.now(),...data});toast('Client added','success');}saveState();closeModal();closeSlideover();renderClients();}
+function deleteClient(id){if(!confirm('Delete this client?'))return;state.data.clients=state.data.clients.filter(x=>x.id!==id);saveState();closeSlideover();renderClients();toast('Client deleted','success');}
+
+function renderFinance(){
+const d=state.data;
+const totalBilled=d.invoices.reduce((s,i)=>s+i.amount,0);
+const totalPaid=d.invoices.filter(i=>i.status==='Paid').reduce((s,i)=>s+i.amount,0);
+const totalPending=d.invoices.filter(i=>i.status!=='Paid').reduce((s,i)=>s+i.amount,0);
+const columns=[
+{key:'id',label:'Invoice #',render:v=>`<span class="fw-600" style="font-family:monospace;font-size:12px">${escapeHtml(v)}</span>`},
+{key:'client',label:'Client'},
+{key:'project',label:'Project',render:v=>`<span class="text-muted">${escapeHtml(v)}</span>`},
+{key:'amount',label:'Amount',render:v=>fmtN(v)},
+{key:'issued',label:'Issued',render:v=>fmtDate(v)},
+{key:'due',label:'Due',render:v=>fmtDate(v)},
+{key:'status',label:'Status',render:v=>`<span class="${statusClass(v)}">${escapeHtml(v)}</span>`}];
+const config={key:'invoices',columns,rows:d.invoices,statusKey:'status',onRowClick:id=>openInvoiceDetail(id),actions:`<button class="btn btn-primary btn-sm" onclick="openInvoiceForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 5v14M5 12h14"/></svg>New Invoice</button>`};
+registerTable('invoices',config);
+document.getElementById('content').innerHTML=`<div class="grid grid-3 mb-4"><div class="card"><div class="kpi-label">Total Billed</div><div class="kpi-value" style="font-size:22px">${fmtCompact(totalBilled)}</div></div><div class="card"><div class="kpi-label">Collected</div><div class="kpi-value" style="font-size:22px;color:var(--emerald)">${fmtCompact(totalPaid)}</div></div><div class="card"><div class="kpi-label">Outstanding</div><div class="kpi-value" style="font-size:22px;color:var(--warn)">${fmtCompact(totalPending)}</div></div></div><div class="card"><div class="card-head"><div class="card-title">Invoices</div></div>${renderTable(config)}</div>`;
+}
+function openInvoiceDetail(id){const inv=state.data.invoices.find(x=>x.id===id);if(!inv)return;openSlideover('Invoice '+inv.id,`<span class="${statusClass(inv.status)}">${inv.status}</span><div class="grid grid-2 mt-4" style="gap:12px"><div><div class="text-sm text-muted">Client</div><div class="fw-600">${escapeHtml(inv.client)}</div></div><div><div class="text-sm text-muted">Project</div><div class="fw-600">${escapeHtml(inv.project)}</div></div><div><div class="text-sm text-muted">Amount</div><div class="fw-600">${fmtN(inv.amount)}</div></div><div><div class="text-sm text-muted">Issued</div><div class="fw-600">${fmtDate(inv.issued)}</div></div><div><div class="text-sm text-muted">Due</div><div class="fw-600">${fmtDate(inv.due)}</div></div></div><div style="display:flex;gap:8px;margin-top:20px"><button class="btn btn-primary" onclick="openInvoiceForm('${inv.id}')">Edit</button><button class="btn btn-danger" onclick="deleteInvoice('${inv.id}')">Delete</button></div>`);}
+function openInvoiceForm(id){const inv=id?state.data.invoices.find(x=>x.id===id):null;openModal(inv?'Edit Invoice':'New Invoice',`<div class="form-group"><label class="form-label">Client</label><select class="form-select" id="fi_client">${state.data.clients.map(c=>`<option ${inv?.client===c.name?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Project ID</label><select class="form-select" id="fi_project">${state.data.projects.map(p=>`<option ${inv?.project===p.id?'selected':''}>${p.id}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Amount (₦)</label><input class="form-input" type="number" id="fi_amount" value="${inv?.amount||0}"></div><div class="form-group"><label class="form-label">Issued</label><input class="form-input" type="date" id="fi_issued" value="${inv?.issued||new Date().toISOString().slice(0,10)}"></div><div class="form-group"><label class="form-label">Due</label><input class="form-input" type="date" id="fi_due" value="${inv?.due||new Date(Date.now()+2592000000).toISOString().slice(0,10)}"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="fi_status">${['Pending','Partial','Paid'].map(s=>`<option ${inv?.status===s?'selected':''}>${s}</option>`).join('')}</select></div>`,`<button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveInvoice(${inv?`'${inv.id}'`:'null'})">${inv?'Save':'Create'}</button>`);}
+function saveInvoice(id){const data={client:document.getElementById('fi_client').value,project:document.getElementById('fi_project').value,amount:+document.getElementById('fi_amount').value||0,issued:document.getElementById('fi_issued').value,due:document.getElementById('fi_due').value,status:document.getElementById('fi_status').value};if(id){Object.assign(state.data.invoices.find(x=>x.id===id),data);toast('Invoice updated','success');}else{state.data.invoices.unshift({id:'INV-'+new Date().getFullYear()+'-'+String(state.data.invoices.length+1).padStart(3,'0'),...data});toast('Invoice created','success');}saveState();closeModal();closeSlideover();renderFinance();}
+function deleteInvoice(id){if(!confirm('Delete this invoice?'))return;state.data.invoices=state.data.invoices.filter(x=>x.id!==id);saveState();closeSlideover();renderFinance();toast('Invoice deleted','success');}
+
+function renderReports(){
+const d=state.data;
+const totalContracts=d.projects.reduce((s,p)=>s+p.budget,0);
+const totalSpend=d.projects.reduce((s,p)=>s+p.spend,0);
+const fleetValue=d.fleet.reduce((s,f)=>s+f.value,0);
+const activeProj=d.projects.filter(p=>p.status!=='Completed').length;
+const totalPaid=d.clients.reduce((s,c)=>s+c.paid,0);
+const totalOutstanding=d.clients.reduce((s,c)=>s+c.contract-c.paid,0);
+document.getElementById('content').innerHTML=`<div class="card"><div class="card-head"><div><div class="card-title">Executive Summary Report</div><div class="card-subtitle">Generated ${fmtDate(new Date().toISOString())}</div></div><button class="btn btn-primary btn-sm" onclick="window.print()">Print Report</button></div><div class="report-section"><h3>Company Overview</h3><div class="report-row"><span>Total Projects</span><span>${d.projects.length}</span></div><div class="report-row"><span>Active Projects</span><span>${activeProj}</span></div><div class="report-row"><span>Total Contract Value</span><span>${fmtN(totalContracts)}</span></div><div class="report-row"><span>Total Spend</span><span>${fmtN(totalSpend)}</span></div><div class="report-row"><span>Fleet Value</span><span>${fmtN(fleetValue)}</span></div><div class="report-row"><span>Workforce</span><span>128</span></div></div><div class="report-section"><h3>Financials</h3><div class="report-row"><span>Total Billed</span><span>${fmtN(d.invoices.reduce((s,i)=>s+i.amount,0))}</span></div><div class="report-row"><span>Collected</span><span>${fmtN(totalPaid)}</span></div><div class="report-row"><span>Outstanding</span><span>${fmtN(totalOutstanding)}</span></div></div><div class="report-section"><h3>Projects</h3>${d.projects.map(p=>`<div class="report-row"><span>${escapeHtml(p.name)}</span><span>${fmtN(p.budget)}</span></div>`).join('')}</div><div class="report-section"><h3>Clients</h3>${d.clients.map(c=>`<div class="report-row"><span>${escapeHtml(c.name)}</span><span>${fmtN(c.contract)}</span></div>`).join('')}</div></div>`;
+}
+
+function initApp(){
+applyTheme();
+const pinInp=document.getElementById('pinInput');
+if(pinInp){
+pinInp.addEventListener('keydown',e=>{if(e.key==='Enter')tryUnlock();});
+pinInp.focus();
+}
+document.getElementById('pinBtn').addEventListener('click',tryUnlock);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeSlideover();closeUserMenu();}});
+}
+
+loadState();
+applyTheme();
+initApp();
+if(sessionStorage.getItem('emraj_unlocked')==='1'){
+document.getElementById('pinLock').classList.add('hidden');
+document.getElementById('app').style.visibility='visible';
+startIdleTimer();
+navigate('overview');
+}else{
+document.getElementById('pinInput').focus();
+}
+</script>
 </body>
 </html>
